@@ -21,12 +21,12 @@ int main(int argc, char *argv[]) {
         if (max_total_threads == 0) {
             max_total_threads = 1;
         }
-        printf("%d", max_total_threads);
     } else {
         printf("Usage %s <number of maximum threads>\n", argv[0]);
         return -1;
     }
     list_t *ips = get_ip_addresses();
+
     int total_targets = ips->len;
     if (total_targets > 0) {
         list_t *combinations;
@@ -40,17 +40,16 @@ int main(int argc, char *argv[]) {
             data[i].ip_address = ip_address;
             thpool_add_work(thpool, (void *) process_chunk, (void *) &data[i]);
         }
+        list_destroy(ips);
         list_destroy(combinations);
         thpool_wait(thpool);
         thpool_destroy(thpool);
 
     } else {
+        list_destroy(ips);
         printf("Blah! No targets found.\n");
         return -1;
     }
-
-    list_destroy(ips);
-
     return 1;
 
 }
