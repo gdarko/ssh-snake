@@ -50,6 +50,36 @@ t_thread_data *t_thread_data_create() {
 }
 
 /**
+ * The t_login_combination destructor
+ * @param combination
+ * @return void
+ */
+void *t_combination_destroy(t_login_combination *self) {
+    free(self);
+    self = NULL;
+}
+
+/**
+ * The t_login_combination destructor
+ * @param ipaddr
+ * @return void
+ */
+void *t_ipaddress_destroy(t_ip_address *self) {
+    free(self);
+    self = NULL;
+}
+
+/**
+ * The thread data destructor
+ * @param data
+ * @return void
+ */
+void *t_thread_data_destroy(t_thread_data *self) {
+    free(self);
+    self = NULL;
+}
+
+/**
  * Writes text to file
  * @param msg
  * @param filename

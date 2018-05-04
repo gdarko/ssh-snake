@@ -29,7 +29,6 @@ int main(int argc, char *argv[]) {
     list_t *ips = get_ip_addresses();
     int total_targets = ips->len;
     if (total_targets > 0) {
-
         list_t *combinations;
         combinations = get_user_pass_combinations();
         threadpool thpool = thpool_init(max_total_threads);

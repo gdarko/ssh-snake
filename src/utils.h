@@ -62,6 +62,26 @@ t_ip_address *t_ipaddress_create(char *ipaddr);
  */
 t_thread_data *t_thread_data_create();
 
+/**
+ * The t_login_combination destructor
+ * @param combination
+ * @return void
+ */
+void *t_combination_destroy(t_login_combination *self);
+
+/**
+ * The t_login_combination destructor
+ * @param ipaddr
+ * @return void
+ */
+void *t_ipaddress_destroy(t_ip_address *self);
+
+/**
+ * The thread data destructor
+ * @param data
+ * @return void
+ */
+void *t_thread_data_destroy(t_thread_data *self);
 
 /**
  * Writes text to file
