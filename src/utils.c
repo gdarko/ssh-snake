@@ -2,48 +2,9 @@
 // Created by darko on 4/30/18.
 //
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <ctype.h>
-#include <string.h>
-#include <errno.h>
-#include <libssh/libssh.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-#include "list.c"
-#include "list_node.c"
-#include "list_iterator.c"
-
+#include "utils.h"
 
 struct stat sb;
-
-/**
- * t_login_combination structure
- */
-struct t_login_combination {
-    char username[255];
-    char password[255];
-} typedef t_login_combination;
-
-
-/**
- * t_ip_address structure
- */
-struct t_ip_address {
-    char ip[255];
-} typedef t_ip_address;
-
-
-/**
- * The thread structure
- */
-struct t_thread_data {
-    list_t *combinations;
-    t_ip_address *ip_address;
-} typedef t_thread_data;
-
 
 /**
  * The t_login_combination constructor
@@ -88,22 +49,6 @@ t_thread_data *t_thread_data_create() {
     return p;
 }
 
-
-/**
- * Convert to int
- * @param st
- * @return
- */
-unsigned int to_int(char *st) {
-    char *x;
-    for (x = st; *x; x++) {
-        if (!isdigit(*x))
-            return 0L;
-    }
-    return (unsigned int) (strtoul(st, 0L, 10));
-}
-
-
 /**
  * Writes text to file
  * @param msg
@@ -134,7 +79,6 @@ void write_auth_details(char *username, char *password, char *host) {
     }
 }
 
-
 /**
  * Write log
  * @param msg
@@ -142,7 +86,6 @@ void write_auth_details(char *username, char *password, char *host) {
 void write_log(char *msg) {
     write_to_file(msg, "log.txt", "a+");
 }
-
 
 /**
  * Is valid ipv4
@@ -154,7 +97,6 @@ int is_valid_ipv4(char *ipAddress) {
     int result = inet_pton(AF_INET, ipAddress, &(sa.sin_addr));
     return result != 0;
 }
-
 
 /**
  * Creates dir if not exist
@@ -203,7 +145,6 @@ list_t *get_ip_addresses() {
     return ips;
 }
 
-
 /**
  * Used to collect the combinations from the pass file
  * @return
@@ -239,7 +180,6 @@ list_t *get_user_pass_combinations() {
     }
     return combinations;
 }
-
 
 /**
  * Verify ssh auth
@@ -278,6 +218,7 @@ int ssh_auth(char *username, char *password, char *host) {
 }
 
 /**
+ * Attack target
  * @param ip_object
  * @param combination
  */

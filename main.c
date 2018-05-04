@@ -1,12 +1,10 @@
 #define LIBSSH_STATIC 1
 
-
 #include <stdio.h>
 #include <stdlib.h>
-#include "libssh/libssh.h"
 #include "src/thpool.h"
 #include "src/list.h"
-#include "src/utils.c"
+#include "src/utils.h"
 
 /**
  * The main
@@ -19,10 +17,11 @@ int main(int argc, char *argv[]) {
     int max_total_threads;
     // Get total threads
     if (argc == 2) {
-        max_total_threads = to_int(argv[1]);
+        max_total_threads = atoi(argv[1]);
         if (max_total_threads == 0) {
             max_total_threads = 1;
         }
+        printf("%d", max_total_threads);
     } else {
         printf("Usage %s <number of maximum threads>\n", argv[0]);
         return -1;
@@ -48,6 +47,7 @@ int main(int argc, char *argv[]) {
 
     } else {
         printf("Blah! No targets found.\n");
+        return -1;
     }
 
     list_destroy(ips);
