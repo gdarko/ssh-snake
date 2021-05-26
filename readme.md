@@ -17,10 +17,10 @@ Users have to act as permitted by local law rules.
 
 ### Usage
 
-1.) `touch output/ips.txt` - Add ips separated by new line
-2.) `touch output/pass_file` - Add "user pass" combination separated by new line
-3.) `cd output`
-4.) `./ssh-scan {number of threads} {debug}` - Be wise with the threads. Debug parameter is optional.
+1. `touch output/ips.txt` - Add ips separated by new line
+2. `touch output/pass_file` - Add "user pass" combination separated by new line
+3. `cd output`
+4. `./ssh-scan {number of threads} {debug}` - Be wise with the threads. Debug parameter is optional.
 
 ## Requirements
 
