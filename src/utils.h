@@ -3,6 +3,7 @@
 //
 #ifndef UTILS_H
 #define UTILS_H
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <stdlib.h>
@@ -19,8 +20,8 @@
  * t_login_combination structure
  */
 struct t_login_combination {
-    char username[255];
-    char password[255];
+    char *username;
+    char *password;
 } typedef t_login_combination;
 
 /**
@@ -33,10 +34,26 @@ struct t_ip_address {
 /**
  * The thread structure
  */
+struct t_config {
+    int debug;
+    int threads;
+} typedef t_config;
+
+/**
+ * The thread structure
+ */
 struct t_thread_data {
-    list_t *combinations;
+    t_config *config;
     t_ip_address *ip_address;
 } typedef t_thread_data;
+
+/**
+ * Returns minimum of two numbers.
+ * @param number1
+ * @param number2
+ * @return
+ */
+int min(int number1, int number2);
 
 /**
  * The t_login_combination constructor
@@ -61,6 +78,12 @@ t_ip_address *t_ipaddress_create(char *ipaddr);
  * @return
  */
 t_thread_data *t_thread_data_create();
+
+/**
+ * The t_config constructor
+ * @return
+ */
+t_config *t_config_create();
 
 /**
  * The t_login_combination destructor
@@ -144,9 +167,9 @@ int ssh_auth(char *username, char *password, char *host);
 /**
  * Attack target
  * @param ip_object
- * @param combination
+ * @param config
  */
-void attack_target(t_ip_address * ip_object, list_t * combinations);
+void attack_target(t_ip_address *ip_object, t_config *config);
 
 /**
  * Chunk process from thread
