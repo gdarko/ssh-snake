@@ -242,11 +242,15 @@ list_t *get_user_pass_combinations() {
 int ssh_auth(char *username, char *password, char *host) {
     ssh_session my_ssh_session;
     int rc;
+    int timeout = 5;
+    int port = 22;
     // Open session and set options
     my_ssh_session = ssh_new();
     if (my_ssh_session == NULL)
         return 0;
     ssh_options_set(my_ssh_session, SSH_OPTIONS_HOST, host);
+    ssh_options_set(my_ssh_session, SSH_OPTIONS_PORT, &port);
+    ssh_options_set(my_ssh_session, SSH_OPTIONS_TIMEOUT, &timeout);
     // Connect to server
     rc = ssh_connect(my_ssh_session);
     if (rc != SSH_OK) {
